@@ -19,13 +19,14 @@ api=os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=api)
 
 chat = client.chats.create(
-    model="gemini-3.6-flash"
+    model="gemini-3.5-flash-lite"
 )
-dec = 'y'
-while dec!='n':
+dec = 'n'
+while dec!='y':
     while msg !="/sair":
         resp = chat.send_message(
             message= f"Bash AI:{msg}")
+        print(f"Bash AI: {resp.text}")
         msg = input("Bash AI: Mais alguma dúvida luiz?\nR:")
     dec = input("Bash AI: Deseja encerrar nossa conversa? (y/n)\nR:")
 
