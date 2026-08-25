@@ -21,13 +21,32 @@ client = genai.Client(api_key=api)
 chat = client.chats.create(
     model="gemini-3.5-flash-lite"
 )
-dec = 'n'
-while dec!='y':
-    msg = input("Bash AI: O que deseja Luiz?\nR:")
-    while msg !="/sair":
-        resp = chat.send_message(
-            message= f"Bash AI:{msg}")
-        print(f"Bash AI: {resp.text}")
-        msg = input("Bash AI: Mais alguma dúvida luiz?\nR:")
-    dec = input("Bash AI: Deseja encerrar nossa conversa? (y/n)\nR:")
 
+#chat 
+flag = 0
+while True:
+    while True:
+        aux = 0
+        if flag == 0:
+            msg = input("Bash AI: O que deseja Luiz?\nR:")
+            flag += 1
+        else:
+            msg = input("Bash AI: Mais alguma dúvida luiz?\nR:")
+
+        if msg == "/sair":
+            break
+        if msg == "/clear":
+            os.system("clear")
+            aux +=1
+
+        if aux == 0:
+            resp = chat.send_message(
+                message= f"Bash AI:{msg}")
+            print(f"Bash AI: {resp.text}")
+
+    dec = input("Deseja encerrar nossa conversa? (y/n)\nR:").lower()
+    while dec not in ("y", "n"):
+        print("Opção inválida! Digite apenas y ou n.")
+        dec = input("Deseja encerrar nossa conversa? (y/n)\nR:").lower()
+    if dec == "y":
+        break
