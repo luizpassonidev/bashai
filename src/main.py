@@ -33,12 +33,14 @@ while True:
         else:
             msg = input("Bash AI: Mais alguma dúvida luiz?\nR:")
 
-        if msg == "/sair":
+        if msg == "/exit":
             break
         if msg == "/clear":
             os.system("clear")
             aux +=1
-
+        if msg == "/model":
+            print("Bash AI: Utilizando o modelo Gemini 3.5 Flash-Lite")
+            aux+=1
         if aux == 0:
             resp = chat.send_message(
                 message= f"Bash AI:{msg}")
