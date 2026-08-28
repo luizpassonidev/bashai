@@ -41,6 +41,9 @@ while True:
         if msg == "/model":
             print("Bash AI: Utilizando o modelo Gemini 3.5 Flash-Lite")
             aux+=1
+        if msg == "/help":
+            print("Bash AI: Lista de Comandos do Bash AI:\n/help - Mostra Lista de comandos.\n/clear - Limpa a tela do Bash AI.\n/exit - Sai da conversa atual.\n/model - Mostra o modelo que o Bash AI está utilizando para gerar texto.")
+            aux+=1
         if aux == 0:
             resp = chat.send_message(
                 message= f"Bash AI:{msg}")
