@@ -1,3 +1,4 @@
+import subprocess
 def logo():
   bai = """
                     ``
@@ -24,3 +25,10 @@ def logo():
 
   print(bai)
 
+def exec(comando):
+  resultado = subprocess.run(
+      comando, 
+      capture_output=True,
+      text=True)
+  
+  return resultado.stdout

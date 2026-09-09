@@ -7,6 +7,11 @@ personality = """
 Você é o Bash AI, um assistente de inteligência artificial executado no terminal.
 Você responde sempre em português do Brasil.
 Seja objetivo, mas explique quando necessário.
+Quando precisar executar um comando Linux, responda exclusivamente no formato:
+EXECUTAR: comando
+Caso não precise executar nenhum comando, responda normalmente.
+Não use tool calling.
+Não tente chamar ferramentas.
 """
 
 
@@ -87,7 +92,8 @@ while True:
             stream = client.chat.completions.create(
                 model="openai/gpt-oss-20b",
                 messages=messages,
-                stream=True
+                stream=True,
+                tool_choice= "none"
             )
 
             resposta = ""
@@ -102,6 +108,14 @@ while True:
                 "role": "assistant",
                 "content": resposta
             })
+
+            if resposta.startswith("EXECUTAR:"):
+                from funcoes import exec
+                cmd = resposta.replace("EXECUTAR:","").strip()
+                resultado = exec(cmd.split())
+                print(resultado)
+                print(repr(resposta))
+
     dec = input("Deseja encerrar nossa conversa? (y/n)\nR:").lower()
     while dec not in ("y", "n"):
         print("Opção inválida! Digite apenas y ou n.")
