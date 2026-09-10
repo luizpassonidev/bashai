@@ -31,4 +31,7 @@ def exec(comando):
       capture_output=True,
       text=True)
   
-  return resultado.stdout
+  if resultado.returncode == 0:
+    return resultado.stdout
+  else:
+    return resultado.stderr

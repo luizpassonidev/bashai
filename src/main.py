@@ -2,16 +2,12 @@ import time
 import os
 from dotenv import load_dotenv
 from groq import Groq
+import json
 
 personality = """
 Você é o Bash AI, um assistente de inteligência artificial executado no terminal.
 Você responde sempre em português do Brasil.
 Seja objetivo, mas explique quando necessário.
-Quando precisar executar um comando Linux, responda exclusivamente no formato:
-EXECUTAR: comando
-Caso não precise executar nenhum comando, responda normalmente.
-Não use tool calling.
-Não tente chamar ferramentas.
 """
 
 
@@ -30,6 +26,26 @@ load_dotenv()
 client = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
+from funcoes import exec
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "exec",
+            "description": "Executa um comando Linux no terminal.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "comando": {
+                        "type": "string",
+                        "description": "O comando Linux que deve ser executado."
+                    }
+                },
+                "required": ["comando"]
+            }
+        }
+    }
+]
 
 #personalidade
 messages = [
@@ -92,29 +108,77 @@ while True:
             stream = client.chat.completions.create(
                 model="openai/gpt-oss-20b",
                 messages=messages,
-                stream=True,
-                tool_choice= "none"
+                tools=tools,
+                 tool_choice= "auto",
+                stream=True
             )
 
             resposta = ""
             print("Bash AI:", end="", flush=True)
+            toolcall = {
+                "id": "",
+                "type": "function",
+                "function": {
+                "name": "",
+                "arguments": ""
+                        }
+                    }
             for chunk in stream:
-                texto = chunk.choices[0].delta.content
-                if texto:
-                    print(texto, end="", flush=True)
-                    resposta += texto
-            print()
-            messages.append({
-                "role": "assistant",
-                "content": resposta
-            })
+                delta = chunk.choices[0].delta
 
-            if resposta.startswith("EXECUTAR:"):
-                from funcoes import exec
-                cmd = resposta.replace("EXECUTAR:","").strip()
-                resultado = exec(cmd.split())
-                print(resultado)
-                print(repr(resposta))
+                if delta.tool_calls:
+                    for tc in delta.tool_calls:
+                        if tc.id:
+                            toolcall["id"] = tc.id
+
+                        if tc.function.name:
+                            toolcall["function"]["name"] = tc.function.name
+
+                        if tc.function.arguments:
+                            toolcall["function"]["arguments"] += tc.function.arguments
+                if delta.content:
+                    print(delta.content, end="", flush=True)
+                    resposta += delta.content
+
+            if toolcall["id"]:
+                respostatc = ""
+                argumentos = json.loads(toolcall["function"]["arguments"])
+                comando = argumentos["comando"]
+                resultado = exec(comando.split())
+                print(f" {resultado}")
+                messages.append({
+                    "role": "assistant",
+                    "tool_calls": [toolcall]
+                            })
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": toolcall["id"],
+                    "content": resultado
+                            })
+                stream = client.chat.completions.create(
+                model="openai/gpt-oss-20b",
+                messages=messages,
+                tools=tools,
+                tool_choice="auto",
+                stream=True
+                            )
+                for chunk in stream:
+                    delta = chunk.choices[0].delta
+                    if delta.content:
+                        print(delta.content, end="", flush=True)
+                        respostatc += delta.content
+                if respostatc:
+                    messages.append({
+                        "role": "assistant",
+                        "content": respostatc
+                            })
+                print("\n")
+
+            if resposta:
+                messages.append({
+                    "role": "assistant",
+                    "content": resposta
+                })
 
     dec = input("Deseja encerrar nossa conversa? (y/n)\nR:").lower()
     while dec not in ("y", "n"):
