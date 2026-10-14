@@ -55,7 +55,7 @@ messages = [
     }
 ]
 
-
+from funcoes import cmd_voz
 # chat
 flag = 0
 while True:
@@ -63,11 +63,13 @@ while True:
         aux = 0
 
         if flag == 0:
-            msg = input("Bash AI: O que deseja Luiz?\nR:")
+    
+            print("Bash AI: O que deseja Luiz?\nR:")
+            msg = cmd_voz()
             flag += 1
         else:
-            msg = input("Bash AI: Mais alguma dúvida luiz?\nR:")
-
+            print("Bash AI: Mais alguma dúvida luiz?\nR:")
+            msg = cmd_voz()
         if msg == "/exit":
             break
 
@@ -76,7 +78,7 @@ while True:
             aux += 1
 
         if msg == "/model":
-            print("Bash AI: Utilizando o modelo Llama 3.1 8B Instant")
+            print("Bash AI: Utilizando o modelo GPT-OSS 20B")
             aux += 1
 
         if msg == "/help":
@@ -144,7 +146,7 @@ while True:
                 respostatc = ""
                 argumentos = json.loads(toolcall["function"]["arguments"])
                 comando = argumentos["comando"]
-                resultado = exec(comando.split())
+                resultado = exec(comando)
                 print(f" {resultado}")
                 messages.append({
                     "role": "assistant",
