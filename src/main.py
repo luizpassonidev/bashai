@@ -76,11 +76,11 @@ while True:
                 msg = cmd_voz()
             flag += 1
         else:
-            print("Bash AI: Mais alguma dúvida luiz?\nR:")
+            print("\nBash AI: Mais alguma dúvida luiz?\nR:")
             if opc == 1:
-                msg = input("Bash AI: O que deseja Luiz?\nR:")
+                msg = input("\nBash AI: Mais alguma dúvida luiz?\nR:")
             elif opc == 2:
-                print("Bash AI: O que deseja Luiz?\nR:")
+                print("\nBash AI: Mais alguma dúvida luiz?\nR:")
                 msg = cmd_voz()
         if msg == "/exit":
             break
