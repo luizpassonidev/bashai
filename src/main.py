@@ -62,14 +62,26 @@ while True:
     while True:
         aux = 0
 
-        if flag == 0:
-    
-            print("Bash AI: O que deseja Luiz?\nR:")
-            msg = cmd_voz()
+        if flag == 0: 
+            opc = 0
+            while True:
+                if opc not in [1,2]:
+                    opc = int(input("Bash AI: Deseja perguntar em texto ou voz?\n1 - Texto\n2 - Voz\nR: "))
+                else:
+                    break
+            if opc == 1:
+                msg = input("Bash AI: O que deseja Luiz?\nR:")
+            elif opc == 2:
+                print("Bash AI: O que deseja Luiz?\nR:")
+                msg = cmd_voz()
             flag += 1
         else:
             print("Bash AI: Mais alguma dúvida luiz?\nR:")
-            msg = cmd_voz()
+            if opc == 1:
+                msg = input("Bash AI: O que deseja Luiz?\nR:")
+            elif opc == 2:
+                print("Bash AI: O que deseja Luiz?\nR:")
+                msg = cmd_voz()
         if msg == "/exit":
             break
 

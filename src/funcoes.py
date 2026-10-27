@@ -102,4 +102,7 @@ def cmd_voz():
 
   except KeyboardInterrupt:
       print("\nEscuta encerrada.")
-  return texto
+  try:
+    return texto
+  except NameError:
+     return "Nenhum comando foi captado!"
